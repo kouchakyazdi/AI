@@ -53,13 +53,13 @@ class NQueen(Problem):
         i = 0
         for i in range(0,n,1):
             self.initial.append(i)
-        print("initialized NQueen states: ", self.initial)
+        print("initialized NQueen state: ", self.initial)
 
     def actions(self, state):
         """in every states actions are the same : all changing two columns
          ex: [1,3] - changes the queen in second column with the fourth column"""
         actions = []
-        counter = j = 0
+        j = 0
         i = 1
         while j < len(state) - 1:
             while i < len(state):
@@ -70,13 +70,13 @@ class NQueen(Problem):
         return actions
 
     def result(self, state, action):
-
+        nextState = state.copy()
         i = action[0]
         j = action[1]
-        temp = state[i]
-        state[i] = state[j]
-        state[j] = temp
-        return state
+        temp = nextState[i]
+        nextState[i] = nextState[j]
+        nextState[j] = temp
+        return nextState
 
     def goal_test(self, state):
         if self.huristic(state) == 0:
@@ -329,6 +329,14 @@ class MyStack:
     def showItems(self):
         print(self.items)
 
+
+
+def hill_climbing(problem):
+    currentNode = Node(problem.initial)
+    neighbours = currentNode.expand2(problem)
+    for item in neighbours:
+        print(item.state)
+
 # TODO fix it. dosent work :(
 def dfs_recurisve(problem):
     root = Node(problem.initial,action=problem.actions(problem.initial))
@@ -480,10 +488,6 @@ def tree_search(problem, frontier):
             return node
         frontier.extend(node.expand(problem))
     return None
-
-def hill_climbing (problem):
-    currentNode = Node(problem.initial)
-
 
 def breadth_first_tree_search(problem):
 
@@ -685,7 +689,7 @@ class NQueensProblem(Problem):
 nqueen = NQueen(4)
 # maze = Maze(3,3)
 # bfs_graph(nqueen)
-bfs_tree(nqueen)
+# bfs_tree(nqueen)
 # print(dfs_graph(maze))
 # print(dfs_tree(maze))
 # dfs_recurisve(maze)
@@ -714,5 +718,10 @@ bfs_tree(nqueen)
 # simpleStack.pop()
 # simpleStack.showItems()
 #-------------------------------------------- NQueen tests
-nqueenproblem = NQueen(6)
-
+# hill_climbing(nqueen)
+array = []
+for action in nqueen.actions(nqueen.initial):
+    next = nqueen.result(nqueen.initial,action)
+    array.append(next)
+    print(next , action , nqueen.huristic(next))
+# print(array)
