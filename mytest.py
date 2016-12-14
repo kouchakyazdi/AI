@@ -44,3 +44,75 @@
 # state = [1,3,0,1]
 # print(conflictCount(state))
 
+# pairs = [ [3,4],[2,5]]
+# pairs.sort()
+# print(pairs)
+
+# class MyQueue:
+#     def __init__(self):
+#         self.items = []
+#
+#     def isEmpty(self):
+#         return self.items == []
+#
+#     def enqueue(self, item):
+#         self.items.insert(0,item)
+#         self.items.sort()
+#
+#     def dequeue(self):
+#         return self.items.pop()
+#
+#     def size(self):
+#         return len(self.items)
+#
+#     def showItems(self):
+#         print(self.items)
+#
+# q = MyQueue()
+# q.enqueue([3,"a"])
+# q.enqueue([4,"b"])
+# q.enqueue([2,"c"])
+# print(q.dequeue())
+
+# import random
+#
+#
+# def myrRandom():
+#     randomState = []
+#     i = 0
+#     for i in range(0, 4, 1):
+#         rand  = (int)((random.random()*10 ) % self.n)
+#         randomState.append(rand)
+#     print(randomState)
+#    # print/(rand)
+# myrRandom()
+#
+# neighbours = [1,2,3,4,5]
+
+# randIndex = (int)(random.random() * 10) % len(neighbours)
+# print(randIndex)
+
+# i = 10
+# while True:
+#     while i > 0:
+#         i -= 1
+#     break
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

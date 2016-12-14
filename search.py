@@ -20,6 +20,10 @@ class Problem(object):
         self.initial = initial
         self.goal = goal
 
+    def getRandomState(self):
+
+        raise NotImplementedError
+
     def actions(self, state):
 
         raise NotImplementedError
@@ -49,11 +53,21 @@ class Problem(object):
 class NQueen(Problem):
 
     def __init__(self , n ):
+        self.n = n
         self.initial = []
         i = 0
         for i in range(0,n,1):
             self.initial.append(i)
         print("initialized NQueen state: ", self.initial)
+
+    def getRandomState(self):
+        """retrun a random generated state (two queen in the same row is possible!)"""
+        randomState = []
+        i = 0
+        for i in range(0, self.n, 1):
+            random = (int)((random.random()*10 ) % self.n)
+            randomState.append(random)
+        return randomState
 
     def actions(self, state):
         """in every states actions are the same : all changing two columns
@@ -288,6 +302,10 @@ class MyQueue:
     def enqueue(self, item):
         self.items.insert(0,item)
 
+    def enqueueSortAsc(self, item):
+        self.items.insert(0,item)
+        self.items.sort(reverse=True)
+
     def dequeue(self):
         return self.items.pop()
 
@@ -295,7 +313,8 @@ class MyQueue:
         return len(self.items)
 
     def showItems(self):
-        print(self.items)
+        for item in self.items:
+            print(item)
 
 # class MyPriorityQueue(MyQueue): # TODO priority
 
@@ -332,10 +351,66 @@ class MyStack:
 
 
 def hill_climbing(problem):
+    """all hill climbing huristics are descending. means: state with lower h is better """
     currentNode = Node(problem.initial)
-    neighbours = currentNode.expand2(problem)
-    for item in neighbours:
-        print(item.state)
+    pq = MyQueue()
+    expandedNodes = createdNodes = 0
+    while True:
+        neighbours = currentNode.expand(problem)
+        expandedNodes += 1
+        for neighbour in neighbours:
+            createdNodes += 1
+            pq.enqueueSortAsc((problem.huristic(neighbour.state),neighbour))
+        neighbour = pq.dequeue()
+        neighbour = neighbour[1]
+        if problem.huristic(neighbour.state) >= problem.huristic(currentNode.state):
+            print("Created Nodes:" , createdNodes)
+            print("Expanded Nodes:" , expandedNodes)
+            return currentNode.state
+        else:
+            currentNode = neighbour
+            print("state:",currentNode.state , "with huristic:" , problem.huristic(currentNode.state))
+
+def hill_climbing_stochastic(problem , n = 10):
+    """selects a random neighbour which is better than the current state (lower h).
+     n is the number of try for finding a better state randomly in each loop. by default n = 10"""
+
+    currentNode = Node(problem.initial)
+    q = MyQueue()
+    expandedNodes = createdNodes = 0
+    while True:
+        counter = len(problem.initial)
+        # counter = n
+        while counter > 0:
+            counter -= 1
+            neighbours = currentNode.expand(problem)
+            expandedNodes += 1
+            randIndex = (int)(random.random()*10) % len(neighbours)
+            neighbour = neighbours[randIndex]
+            createdNodes += 1
+            if problem.huristic(neighbour.state) <= problem.huristic(currentNode.state):
+                currentNode = neighbour
+                print("state:", currentNode.state, "with huristic:", problem.huristic(currentNode.state))
+    print("Created Nodes:", createdNodes)
+    print("Expanded Nodes:", expandedNodes)
+    return currentNode.state
+
+def hill_climbing_random_restart(problem , run_counter = 8):
+    if run_counter < 0:
+        return currentNode.state
+    currentNode = Node(problem.initial)
+    pq = MyQueue()
+    while True:
+        neighbours = currentNode.expand(problem)
+        for neighbour in neighbours:
+            pq.enqueueSortAsc((problem.huristic(neighbour.state), neighbour))
+        neighbour = pq.dequeue()
+        neighbour = neighbour[1]
+        if problem.huristic(neighbour.state) > problem.huristic(currentNode.state):
+            currentNode = Node(problem.getRandomState())
+        else:
+            currentNode = neighbour
+            print(currentNode.state)
 
 # TODO fix it. dosent work :(
 def dfs_recurisve(problem):
@@ -694,7 +769,8 @@ nqueen = NQueen(4)
 # print(dfs_tree(maze))
 # dfs_recurisve(maze)
 # astar_search(maze)
-
+# hill_climbing(nqueen)
+hill_climbing_stochastic(nqueen)
 #-------------------------------------------- Queue tests
 # q = MyQueue()
 # q.enqueue(2)
@@ -718,10 +794,9 @@ nqueen = NQueen(4)
 # simpleStack.pop()
 # simpleStack.showItems()
 #-------------------------------------------- NQueen tests
-# hill_climbing(nqueen)
-array = []
-for action in nqueen.actions(nqueen.initial):
-    next = nqueen.result(nqueen.initial,action)
-    array.append(next)
-    print(next , action , nqueen.huristic(next))
+# array = []
+# for action in nqueen.actions(nqueen.initial):
+#     next = nqueen.result(nqueen.initial,action)
+#     array.append(next)
+#     print(next , action , nqueen.huristic(next))
 # print(array)
