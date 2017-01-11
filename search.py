@@ -371,16 +371,17 @@ def hill_climbing(problem):
             currentNode = neighbour
             print("state:",currentNode.state , "with huristic:" , problem.huristic(currentNode.state))
 
-def hill_climbing_stochastic(problem , n = 10):
+def hill_climbing_stochastic(problem , n = 100):
     """selects a random neighbour which is better than the current state (lower h).
-     n is the number of try for finding a better state randomly in each loop. by default n = 10"""
+     n is the number of try for finding a better state randomly in each loop.
+     by default n = state space ex: array lengh"""
 
     currentNode = Node(problem.initial)
     q = MyQueue()
     expandedNodes = createdNodes = 0
     while True:
         counter = len(problem.initial)
-        # counter = n
+        counter = n
         while counter > 0:
             counter -= 1
             neighbours = currentNode.expand(problem)
@@ -391,6 +392,9 @@ def hill_climbing_stochastic(problem , n = 10):
             if problem.huristic(neighbour.state) <= problem.huristic(currentNode.state):
                 currentNode = neighbour
                 print("state:", currentNode.state, "with huristic:", problem.huristic(currentNode.state))
+                break
+        if counter < 1:
+            break
     print("Created Nodes:", createdNodes)
     print("Expanded Nodes:", expandedNodes)
     return currentNode.state
@@ -761,7 +765,7 @@ class NQueensProblem(Problem):
 
 #-------------------------------------------- search algorithm tests
 # maze = Maze(3,3,[[1,2],[1,3],[3,1]])
-nqueen = NQueen(4)
+nqueen = NQueen(7)
 # maze = Maze(3,3)
 # bfs_graph(nqueen)
 # bfs_tree(nqueen)
@@ -769,8 +773,8 @@ nqueen = NQueen(4)
 # print(dfs_tree(maze))
 # dfs_recurisve(maze)
 # astar_search(maze)
-# hill_climbing(nqueen)
-hill_climbing_stochastic(nqueen)
+hill_climbing(nqueen)
+# hill_climbing_stochastic(nqueen)
 #-------------------------------------------- Queue tests
 # q = MyQueue()
 # q.enqueue(2)
