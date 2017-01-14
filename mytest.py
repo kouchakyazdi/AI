@@ -97,11 +97,20 @@
 #     while i > 0:
 #         i -= 1
 #     break
+# #
+# import sys , random
 #
-import sys
-
-for each in range(sys.maxsize):
-    print(each)
+# list = [1,2,3,4,5,6]
+# arr = []
+# arr = random.shuffle(list)
+# # print(random.choice(list))
+# # arr = []
+# # for item in list:
+# #     arr.append(random.choice(list))
+# print(arr , listr)
+# # for each in range(sys.maxsize):
+# #     print(each)
+#
 
 
 

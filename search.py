@@ -8,11 +8,6 @@ import sys
 import bisect
 import queue
 
-infinity = float('inf')
-
-# ______________________________________________________________________________
-
-
 class Problem(object):
 
     def __init__(self, initial, goal=None):
@@ -63,10 +58,9 @@ class NQueen(Problem):
     def getRandomState(self):
         """retrun a random generated state (two queen in the same row is possible!)"""
         randomState = []
-        i = 0
-        for i in range(0, self.n, 1):
-            random = (int)((random.random()*10 ) % self.n)
-            randomState.append(random)
+        for i in range(0,self.n,1):
+            randomState.append(i)
+        random.shuffle(randomState)
         return randomState
 
     def actions(self, state):
@@ -386,9 +380,8 @@ def hill_climbing_stochastic(problem , n = 100):
             counter -= 1
             neighbours = currentNode.expand(problem)
             expandedNodes += 1
-            randIndex = (int)(random.random()*10) % len(neighbours)
-            neighbour = neighbours[randIndex]
             createdNodes += 1
+            neighbour = random.choice(neighbours)
             if problem.huristic(neighbour.state) <= problem.huristic(currentNode.state):
                 currentNode = neighbour
                 print("state:", currentNode.state, "with huristic:", problem.huristic(currentNode.state))
@@ -400,11 +393,13 @@ def hill_climbing_stochastic(problem , n = 100):
     return currentNode.state
 
 def hill_climbing_random_restart(problem , run_counter = 8):
-    if run_counter < 0:
-        return currentNode.state
+
     currentNode = Node(problem.initial)
     pq = MyQueue()
     while True:
+        if run_counter < 0:
+            return currentNode.state
+        print("state:" , currentNode.state , " huristic:" , problem.huristic(currentNode.state))
         neighbours = currentNode.expand(problem)
         for neighbour in neighbours:
             pq.enqueueSortAsc((problem.huristic(neighbour.state), neighbour))
@@ -412,6 +407,7 @@ def hill_climbing_random_restart(problem , run_counter = 8):
         neighbour = neighbour[1]
         if problem.huristic(neighbour.state) > problem.huristic(currentNode.state):
             currentNode = Node(problem.getRandomState())
+            run_counter -= 1
         else:
             currentNode = neighbour
             print(currentNode.state)
@@ -765,7 +761,7 @@ class NQueensProblem(Problem):
 
 #-------------------------------------------- search algorithm tests
 # maze = Maze(3,3,[[1,2],[1,3],[3,1]])
-nqueen = NQueen(7)
+nqueen = NQueen(4)
 # maze = Maze(3,3)
 # bfs_graph(nqueen)
 # bfs_tree(nqueen)
@@ -773,8 +769,9 @@ nqueen = NQueen(7)
 # print(dfs_tree(maze))
 # dfs_recurisve(maze)
 # astar_search(maze)
-hill_climbing(nqueen)
-# hill_climbing_stochastic(nqueen)
+# hill_climbing(nqueen)
+hill_climbing_stochastic(nqueen)
+# hill_climbing_random_restart(nqueen,10)
 #-------------------------------------------- Queue tests
 # q = MyQueue()
 # q.enqueue(2)
@@ -804,3 +801,5 @@ hill_climbing(nqueen)
 #     array.append(next)
 #     print(next , action , nqueen.huristic(next))
 # print(array)
+# nqueen = NQueen(5)
+# print(nqueen.getRandomState())
