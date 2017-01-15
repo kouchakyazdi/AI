@@ -1,11 +1,7 @@
 
-from utils import *
-from grid import distance
-from queue import *
 import math
 import random
 import sys
-import bisect
 import queue
 
 class Problem(object):
@@ -585,200 +581,6 @@ def dfs_graph(problem):
     return "end of bfs and nothing"
 
 
-def tree_search(problem, frontier):
-
-    frontier.append(Node(problem.initial))
-    while frontier:
-        node = frontier.pop()
-        if problem.goal_test(node.state):
-            return node
-        frontier.extend(node.expand(problem))
-    return None
-
-def breadth_first_tree_search(problem):
-
-    return tree_search(problem, FIFOQueue())
-
-
-def depth_first_tree_search(problem):
-
-    return tree_search(problem, Stack())
-
-
-
-def breadth_first_search(problem):
-
-    node = Node(problem.initial)
-    if problem.goal_test(node.state):
-        return node
-    frontier = FIFOQueue()
-    frontier.append(node)
-    explored = set()
-    while frontier:
-        node = frontier.pop()
-        explored.add(node.state)
-        for child in node.expand(problem):
-            if child.state not in explored and child not in frontier:
-                if problem.goal_test(child.state):
-                    return child
-                frontier.append(child)
-    return None
-
-
-def best_first_graph_search(problem, f):
-
-    f = memoize(f, 'f')
-    node = Node(problem.initial)
-    if problem.goal_test(node.state):
-        return node
-    frontier = PriorityQueue(min, f)
-    frontier.append(node)
-    explored = set()
-    while frontier:
-        node = frontier.pop()
-        if problem.goal_test(node.state):
-            return node
-        explored.add(node.state)
-        for child in node.expand(problem):
-            if child.state not in explored and child not in frontier:
-                frontier.append(child)
-            elif child in frontier:
-                incumbent = frontier[child]
-                if f(child) < f(incumbent):
-                    del frontier[incumbent]
-                    frontier.append(child)
-    return None
-
-
-def uniform_cost_search(problem):
-
-    return best_first_graph_search(problem, lambda node: node.path_cost)
-
-
-def depth_limited_search(problem, limit=50):
-
-    def recursive_dls(node, problem, limit):
-        if problem.goal_test(node.state):
-            return node
-        elif limit == 0:
-            return 'cutoff'
-        else:
-            cutoff_occurred = False
-            for child in node.expand(problem):
-                result = recursive_dls(child, problem, limit - 1)
-                if result == 'cutoff':
-                    cutoff_occurred = True
-                elif result is not None:
-                    return result
-            return 'cutoff' if cutoff_occurred else None
-
-    return recursive_dls(Node(problem.initial), problem, limit)
-
-
-def iterative_deepening_search(problem):
-
-    for depth in range(sys.maxsize):
-        result = depth_limited_search(problem, depth)
-        if result != 'cutoff':
-            return result
-
-
-greedy_best_first_graph_search = best_first_graph_search
-
-
-def astar_search(problem, h=None):
-
-    h = memoize(h or problem.h, 'h')
-    return best_first_graph_search(problem, lambda n: n.path_cost + h(n))
-
-
-def recursive_best_first_search(problem, h=None):
-
-    h = memoize(h or problem.h, 'h')
-
-    def RBFS(problem, node, flimit):
-        if problem.goal_test(node.state):
-            return node, 0   # (The second value is immaterial)
-        successors = node.expand(problem)
-        if len(successors) == 0:
-            return None, infinity
-        for s in successors:
-            s.f = max(s.path_cost + h(s), node.f)
-        while True:
-            # Order by lowest f value
-            successors.sort(key=lambda x: x.f)
-            best = successors[0]
-            if best.f > flimit:
-                return None, best.f
-            if len(successors) > 1:
-                alternative = successors[1].f
-            else:
-                alternative = infinity
-            result, best.f = RBFS(problem, best, min(flimit, alternative))
-            if result is not None:
-                return result, best.f
-
-    node = Node(problem.initial)
-    node.f = h(node)
-    result, bestf = RBFS(problem, node, infinity)
-    return result
-
-
-
-
-class NQueensProblem(Problem):
-
-
-    def __init__(self, N):
-        self.N = N
-        self.initial = [None] * N
-
-    def actions(self, state):
-
-        if state[-1] is not None:
-            return []  # All columns filled; no successors
-        else:
-            col = state.index(None)
-            return [row for row in range(self.N)
-                    if not self.conflicted(state, row, col)]
-
-    def result(self, state, row):
-
-        col = state.index(None)
-        new = state[:]
-        new[col] = row
-        return new
-
-    def conflicted(self, state, row, col):
-
-        return any(self.conflict(row, col, state[c], c)
-                   for c in range(col))
-
-    def conflict(self, row1, col1, row2, col2):
-
-        return (row1 == row2 or  # same row
-                col1 == col2 or  # same column
-                row1 - col1 == row2 - col2 or  # same \ diagonal
-                row1 + col1 == row2 + col2)   # same / diagonal
-
-    def goal_test(self, state):
-
-        if state[-1] is None:
-            return False
-        return not any(self.conflicted(state, state[col], col)
-                       for col in range(len(state)))
-
-
-
-
-
-
-
-
-
-
-
-
 
 #-------------------------------------------- node function tests
 # maze = Maze(4,4,[2,2])
@@ -795,12 +597,12 @@ class NQueensProblem(Problem):
 nqueen = NQueen(4)
 # maze = Maze(3,3)
 # bfs_graph(nqueen)
-bfs_tree(nqueen)
+# bfs_tree(nqueen)
 # breadth_first_search(nqueen)
 # print(dfs_graph(maze))
 # print(dfs_tree(maze))
 # dfs_recurisve(maze)
-ucs_test(nqueen)
+ucs_graph(nqueen)
 # astar_search(maze)
 # hill_climbing(nqueen)
 # hill_climbing_stochastic(nqueen)
