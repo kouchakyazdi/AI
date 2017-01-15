@@ -91,7 +91,7 @@ class NQueen(Problem):
             return True
         return False
 
-    def path_cost(self, c, state1, action, state2):
+    def path_cost(self, c , state1, action, state2 ):
         return c+1
 
     def isConflict(self, x1, x2, y1, y2):
@@ -310,16 +310,13 @@ class MyQueue:
         for item in self.items:
             print(item)
 
-# class MyPriorityQueue(MyQueue): # TODO priority
+class MyPriorityQueue(MyQueue):
 
-    # def enqueue(self, node):
-    #
-    #         item = {node , node.getG()}
-    #         self.items.insert(0,item)
-    #
-    # def dequeue(self, item):
-    #
-    # def find(self , item):
+    def sortAsc(self):
+        self.items.sort()
+
+    def sortDesc(self):
+        self.items.sort(reverse=True)
 
 
 
@@ -457,6 +454,7 @@ def bfs_tree(problem):
         print( "# of visited nodes : ", round_counter , "\n")
     return "end of bfs and nothing"
 
+
 def bfs_graph(problem):
     path=[] #for solve_backtrack(path)
     root = Node(problem.initial)
@@ -467,7 +465,7 @@ def bfs_graph(problem):
     expanded_counter = 1
     memory_counter = 2
     while f :
-        print("e : " , e , "\nf : " , f.items)
+        # print("e : " , e[:] , "\nf : " , f.items)
         print(memory_counter, " nodes are in memory(f) right know")
         currentNode = f.dequeue()
         e.append(currentNode.state)                         #cheto mishe akhe currentNode age be e ezaf konim kar nemikone !!
@@ -488,6 +486,41 @@ def bfs_graph(problem):
                     print(child.state , "   added")
         round_counter += 1
         print( "# of visited nodes : ", round_counter , "\n")
+    return "end of bfs and nothing"
+
+def ucs_graph(problem):
+    root = Node(problem.initial)
+    f = MyPriorityQueue()
+    f.enqueue([root , root.path_cost])
+    round_counter = 1
+    expanded_counter = 1
+    memory_counter = 2
+    e = [root.state]
+    while f :
+        f.sortDesc()
+        # print(memory_counter, " nodes are in memory(f) right know")
+        tmp = f.dequeue()
+        currentNode = tmp[0]
+        e.append(currentNode.state)
+        print(currentNode.state)
+        # memory_counter -= 1
+        if problem.goal_test(currentNode.state):
+            print("reached the goal :" , currentNode.state)
+            # print("# of expanded nodes : " , expanded_counter)
+            return currentNode.solution()
+        else:
+            childs = currentNode.expand(problem)
+            # print(currentNode.state , "   expanded")
+            expanded_counter += 1
+            for child in childs:
+                if child.state not in e:
+                    f.enqueue([child , child.path_cost])
+
+                # memory_counter += 1
+                # print(child.state , "   added")
+                # print( child.path_cost)
+        # round_counter += 1
+        # print( "# of visited nodes : ", round_counter , "\n")
     return "end of bfs and nothing"
 
 def dfs_tree(problem):
@@ -555,9 +588,7 @@ def dfs_graph(problem):
 def tree_search(problem, frontier):
 
     frontier.append(Node(problem.initial))
-    round_counter = 0
     while frontier:
-        round_counter += 1
         node = frontier.pop()
         if problem.goal_test(node.state):
             return node
@@ -764,13 +795,15 @@ class NQueensProblem(Problem):
 nqueen = NQueen(4)
 # maze = Maze(3,3)
 # bfs_graph(nqueen)
-# bfs_tree(nqueen)
+bfs_tree(nqueen)
+# breadth_first_search(nqueen)
 # print(dfs_graph(maze))
 # print(dfs_tree(maze))
 # dfs_recurisve(maze)
+ucs_test(nqueen)
 # astar_search(maze)
 # hill_climbing(nqueen)
-hill_climbing_stochastic(nqueen)
+# hill_climbing_stochastic(nqueen)
 # hill_climbing_random_restart(nqueen,10)
 #-------------------------------------------- Queue tests
 # q = MyQueue()

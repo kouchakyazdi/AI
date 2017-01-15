@@ -111,7 +111,41 @@
 # # for each in range(sys.maxsize):
 # #     print(each)
 #
+class MyQueue:
+    def __init__(self):
+        self.items = []
 
+    def isEmpty(self):
+        return self.items == []
+
+    def enqueue(self, item):
+        self.items.insert(0,item)
+
+    def enqueueSortAsc(self, item):
+        self.items.insert(0,item)
+        self.items.sort(reverse=True)
+
+    def dequeue(self):
+        return self.items.pop()
+
+    def size(self):
+        return len(self.items)
+
+    def sortAsc(self):
+        return self.items.sort(reverse=True)
+    def showItems(self):
+        for item in self.items:
+            print(item)
+
+    # add  to items in pairs : [node , g]
+q = MyQueue()
+q.enqueue(["node1",1])
+q.enqueue(["node4",4])
+q.enqueue(["node2",2])
+q.enqueue(["node3",3])
+q.enqueue(["node5",5])
+q.sortAsc()
+print(q.items)
 
 
 
