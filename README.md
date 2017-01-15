@@ -1,6 +1,7 @@
-# Problem Solving Agent (Goal Oriented & Optimizing Problems)
+# Problem Solving Agent
+####(Goal Oriented & Optimizing Problems)
 
-###### for **observable** , **descrete** ,** determini stic **,** known ** enviroments
+###### for observable, descrete , deterministic , known enviroments
 
 0 - import the search module to your code
 
