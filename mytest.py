@@ -147,28 +147,66 @@
 # q.sortAsc()
 # print(q.items)
 
-matrix = {}
-matrix[1,1] = 2
-matrix[0,0] = None
+# import  random
+# valid_values = [1,2,3,4,5,6,7,8,0]
+#
+# matrix = {}
+# for row in range(0,3,1):
+#     for col in range(0,3,1):
+#         tmp = random.choice(valid_values)
+#         valid_values.remove(tmp)
+#         matrix[row, col] = tmp
+#
+# for row in range(0,3,1):
+#     tmplist = []
+#     for col in range(0,3,1):
+#         # print("row:", row , "col:",col,"value:" , matrix[row,col])
+#         tmplist.append(matrix[row ,col])
+#     print(tmplist)
+# print(matrix)
 
-print(matrix[0,0])
+def makePositive(x):
+    if x < 0:
+        return -x
+    return x
 
-def func ():
+def getCoordinate(matrix , value):
 
-    e = [1,2,3]
-    def funcc(e):
-        e.append(4)
-        print(e.items)
+    coordinate = list(matrix.keys())[list(matrix.values()).index(value)]
+    return coordinate
 
-    a = []
-    funcc(a)
-func()
+def difference (x,y):
+    return  makePositive(x - y)
+
+def coordinateDifference (c1 , c2):
+    return makePositive(c1[0] - c2[0]) + makePositive(c1[1] - c2[1])
+
+initialStatePuzzle = {(0,0):1 , (0,1):6 , (0,2):2 , (1,0):5 , (1,1):3 , (1,2):0 , (2,0):4 , (2,1):7 , (2,2):8}
+goalStatePuzzle = {(0,0):1 , (0,1):2 , (0,2):3 , (1,0):4 , (1,1):5 , (1,2):6 , (2,0):7 , (2,1):8 , (2,2):0}
 
 
+correct = getCoordinate(goalStatePuzzle,7)
+real = getCoordinate(initialStatePuzzle,7)
 
+print(coordinateDifference(correct , real))
 
+# print("asdads",goalStatePuzzle.get((0,2)))
+# goalStatePuzzle[0,0] = 0
+# print(goalStatePuzzle)
 
+# def getCoordinateCell( dict, cellValue):
+#     cellIndex = list(puzzle.keys())[list(puzzle.values()).index(cellValue)]
+#     return cellIndex
+# print(matrix.items())
+# matrix[1,1] = 1
+# matrix[0,0] = None
 
+# print(matrix[2,2])
+# valid_values.remove(1)
+# print(valid_values)
+# lsit = ['a' , 'b' , 'c']
+# list.remove('a')
+# print(list)
 
 
 

@@ -6,7 +6,7 @@ import queue
 
 class Problem(object):
 
-    def __init__(self, initial, goal=None):
+    def __init__(self, initial, goal=None):        #neccessary
 
         self.initial = initial
         self.goal = goal
@@ -15,22 +15,17 @@ class Problem(object):
 
         raise NotImplementedError
 
-    def actions(self, state):
+    def actions(self, state):                   #neccessary
 
         raise NotImplementedError
 
-    def result(self, state, action):
+    def result(self, state, action):            #neccessary
 
         raise NotImplementedError
 
-    def goal_test(self, state):
+    def goal_test(self, state):             #neccessary
 
         raise NotImplementedError
-
-        # if isinstance(self.goal, list):
-        #     return is_in(state, self.goal)
-        # else:
-        #     return state == self.goal
 
     def path_cost(self, c, state1, action, state2):
 
@@ -80,6 +75,104 @@ class SimpleVaccumeMachine (Problem):
     def path_cost(self, c, state1, action, state2):
         return c+1
 
+class Puzzle(Problem):
+    """state is a dictionary"""
+    def __init__(self , initial = None , goal = None):
+        #     for initial state
+        if initial == None:
+            self.initial = self.getRandomState()
+        else:
+            self.initial = initial
+        #     for goal state
+        itr_number = 0
+        if goal == None:
+            valid_values = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+            puzzle = {}
+            for row in range(0, 3, 1):
+                for col in range(0, 3, 1):
+                    puzzle[row, col] = itr_number
+                    itr_number += 1
+            self.goal = puzzle
+        else:
+            self.goal = goal
+
+    def getCoordinateCell(self , dict , cellValue):
+        cellIndex = list(dict.keys())[list(dict.values()).index(cellValue)]
+        return cellIndex
+
+    def goal_test(self, state):
+        return state == self.goal
+
+    def actions(self, state):
+        actions = ['U' ,'D' , 'L' , 'R']
+        emptyCell = self.getCoordinateCell(state , 0)
+        row = emptyCell[0]
+        col = emptyCell[1]
+
+        if row == 0 :
+            actions.remove('U')
+        if col == 0 :
+            actions.remove('L')
+        if row == 2 :
+            actions.remove('D')
+        if col == 2 :
+            actions.remove('R')
+
+        return actions
+
+    def result(self, state = {}, action = ''):
+        newState = state.copy()
+        emptyCell = self.getCoordinateCell(state, 0)
+        if action == 'L':
+            fullCellValue = state.get((emptyCell[0] , emptyCell[1] - 1))
+            newState[emptyCell[0] , emptyCell[1]] = fullCellValue
+            newState[emptyCell[0] , emptyCell[1] - 1] = 0
+        if action =='R':
+            fullCellValue = state.get((emptyCell[0], emptyCell[1] + 1))
+            newState[emptyCell[0], emptyCell[1]] = fullCellValue
+            newState[emptyCell[0], emptyCell[1] + 1] = 0
+        if action =='U':
+            fullCellValue = state.get((emptyCell[0] - 1, emptyCell[1]))
+            newState[emptyCell[0], emptyCell[1]] = fullCellValue
+            newState[emptyCell[0] - 1, emptyCell[1]] = 0
+        if action =='D':
+            fullCellValue = state.get((emptyCell[0] + 1, emptyCell[1]))
+            newState[emptyCell[0], emptyCell[1]] = fullCellValue
+            newState[emptyCell[0] + 1, emptyCell[1]] = 0
+
+        return newState
+
+    def getRandomState(self):
+
+        valid_values = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+        puzzle = {}
+        for row in range(0, 3, 1):
+            for col in range(0, 3, 1):
+                tmp = random.choice(valid_values)
+                valid_values.remove(tmp)
+                puzzle[row, col] = tmp
+        return puzzle
+
+    def path_cost(self, c, state1, action, state2):
+        return c+1
+
+    def huristic(self, state = {}):
+        """sum of the belman ford distance of each tile to it's correct place"""
+        h = 0
+        def makePositive(x):
+            if x < 0:
+                return -x
+            return x
+
+        def difference(x, y):
+            return makePositive(x - y)
+
+        def coordinateDifference(c1, c2):
+            return makePositive(c1[0] - c2[0]) + makePositive(c1[1] - c2[1])
+
+        for i in range(0,9,1):
+            h += coordinateDifference(self.getCoordinateCell(state,i) , self.getCoordinateCell(self.goal,i))
+        return h;
 
 class NQueen(Problem):
 
@@ -142,7 +235,7 @@ class NQueen(Problem):
         return False
 
     def huristic(self ,state):
-        """The heuristic cost function h is the number of pairs of queens that are attacking each other"""
+        """The heuristic cost function h is the number of pairs of numbers that are attacking each other"""
         counter = j = 0
         i = 1
         while j < len(state) - 1:
@@ -154,7 +247,6 @@ class NQueen(Problem):
             j += 1
             i = j + 1
         return counter
-# ______________________________________________________________________________
 
 class Maze(Problem):
 
@@ -221,9 +313,6 @@ class Node:
         self.depth = 0
         if parent:
             self.depth = parent.depth + 1
-
-    def __lt__(self, node):
-        return self.state < node.state
 
     def getPathCost(self):
         return self.path_cost
@@ -296,34 +385,6 @@ class Node:
             node = node.parent
         return g
 
-class PSA:
-
-    def __init__(self, initial_state=None):
-        self.state = initial_state
-        self.seq = []
-
-    def __call__(self, percept):
-        self.state = self.update_state(self.state, percept)
-        if not self.seq:
-            goal = self.formulate_goal(self.state)
-            problem = self.formulate_problem(self.state, goal)
-            self.seq = self.search(problem)
-            if not self.seq:
-                return None
-        return self.seq.pop(0)
-
-    def update_state(self, percept):
-        raise NotImplementedError
-
-    def formulate_goal(self, state):
-        raise NotImplementedError
-
-    def formulate_problem(self, state, goal):
-        raise NotImplementedError
-
-    def search(self, problem):
-        raise NotImplementedError
-
 class MyQueue:
     def __init__(self):
         self.items = []
@@ -356,8 +417,6 @@ class MyPriorityQueue(MyQueue):
     def sortDesc(self):
         self.items.sort(reverse=True)
 
-
-
 class MyStack:
     def __init__(self):
         self.items = []
@@ -376,8 +435,6 @@ class MyStack:
 
     def showItems(self):
         print(self.items)
-
-
 
 def hill_climbing(problem):
     """all hill climbing huristics are descending. means: state with lower h is better """
@@ -457,7 +514,6 @@ def dfs_rec (problem):
     depthFirstSearch(problem , root , e)
     return
 
-
 def depthFirstSearch(problem = Problem, node = Node, visited=[]):
 
     if problem.goal_test(node.state):
@@ -470,8 +526,6 @@ def depthFirstSearch(problem = Problem, node = Node, visited=[]):
     for neighbour in neighbours:
         if neighbour.state not in visited:
             depthFirstSearch(problem , neighbour , visited)
-
-
 
 def bfs_tree(problem):
 
@@ -500,7 +554,6 @@ def bfs_tree(problem):
                 print(child.state , "   added")
         print( "# of visited nodes : ", visitedNodesCounter , "\n")
     return "end of bfs and nothing"
-
 
 def bfs_graph(problem):
     path=[] #for solve_backtrack(path)
@@ -601,7 +654,6 @@ def astar_graph(problem):
         print( "# of visited nodes : ", visitedNodesCounter , "\n")
     return "end of bfs and nothing"
 
-
 def dfs_tree(problem):
 
     root = Node(problem.initial)
@@ -677,11 +729,11 @@ def dfs_graph(problem):
 # print(node1.expand(maze))
 
 #-------------------------------------------- search algorithm tests
-maze = Maze(6,6,[[1,2],[1,3],[3,1]])
+# maze = Maze(6,6,[[1,2],[1,3],[3,1]])
 # maze = Maze(3,3)
-nqueen = NQueen(4)
-smv = SimpleVaccumeMachine()
-bfs_graph(smv)
+# nqueen = NQueen(4)
+# smv = SimpleVaccumeMachine()
+# bfs_graph(nqueen)
 # dfs_rec(nqueen)
 # bfs_graph(nqueen)
 # bfs_tree(nqueen)
@@ -724,3 +776,13 @@ bfs_graph(smv)
 # print(array)
 # nqueen = NQueen(5)
 # print(nqueen.getRandomState())
+#-------------------------------------------- Routing (8-Puzzle Game) tests
+
+initialStatePuzzle = {(0,0):1 , (0,1):6 , (0,2):2 , (1,0):5 , (1,1):3 , (1,2):0 , (2,0):4 , (2,1):7 , (2,2):8}
+goalStatePuzzle = {(0,0):1 , (0,1):2 , (0,2):3 , (1,0):4 , (1,1):5 , (1,2):6 , (2,0):7 , (2,1):8 , (2,2):0}
+
+puzzle = Puzzle(initialStatePuzzle , goalStatePuzzle) #initializing puzzle
+
+bfs_graph(puzzle)
+# ucs_graph(puzzle)
+# astar_graph(puzzle)
