@@ -1,7 +1,6 @@
 # Problem Solving Agent
-####(Goal Oriented & Optimizing Problems)
 
-###### for observable, descrete , deterministic , known enviroments
+>for **Goal Oriented & Optimizing** Problems and **observable, descrete , deterministic , known** enviroments
 
 0 - import the search module to your code
 
@@ -14,5 +13,5 @@
 
 # More Info
 
-######Goal oriented searches : dfs , bfs , ucs , a* (all based on graph search)
+Goal oriented searches : dfs , bfs , ucs , astar (all based on graph search)
  * these search algorithems are good for situations that you know the **Goal state** and you don't know how to go there ? (by which actions)

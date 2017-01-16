@@ -111,44 +111,58 @@
 # # for each in range(sys.maxsize):
 # #     print(each)
 #
-class MyQueue:
-    def __init__(self):
-        self.items = []
+# class MyQueue:
+#     def __init__(self):
+#         self.items = []
+#
+#     def isEmpty(self):
+#         return self.items == []
+#
+#     def enqueue(self, item):
+#         self.items.insert(0,item)
+#
+#     def enqueueSortAsc(self, item):
+#         self.items.insert(0,item)
+#         self.items.sort(reverse=True)
+#
+#     def dequeue(self):
+#         return self.items.pop()
+#
+#     def size(self):
+#         return len(self.items)
+#
+#     def sortAsc(self):
+#         return self.items.sort(reverse=True)
+#     def showItems(self):
+#         for item in self.items:
+#             print(item)
+#
+#     # add  to items in pairs : [node , g]
+# q = MyQueue()
+# q.enqueue(["node1",1])
+# q.enqueue(["node4",4])
+# q.enqueue(["node2",2])
+# q.enqueue(["node3",3])
+# q.enqueue(["node5",5])
+# q.sortAsc()
+# print(q.items)
 
-    def isEmpty(self):
-        return self.items == []
+matrix = {}
+matrix[1,1] = 2
+matrix[0,0] = None
 
-    def enqueue(self, item):
-        self.items.insert(0,item)
+print(matrix[0,0])
 
-    def enqueueSortAsc(self, item):
-        self.items.insert(0,item)
-        self.items.sort(reverse=True)
+def func ():
 
-    def dequeue(self):
-        return self.items.pop()
+    e = [1,2,3]
+    def funcc(e):
+        e.append(4)
+        print(e.items)
 
-    def size(self):
-        return len(self.items)
-
-    def sortAsc(self):
-        return self.items.sort(reverse=True)
-    def showItems(self):
-        for item in self.items:
-            print(item)
-
-    # add  to items in pairs : [node , g]
-q = MyQueue()
-q.enqueue(["node1",1])
-q.enqueue(["node4",4])
-q.enqueue(["node2",2])
-q.enqueue(["node3",3])
-q.enqueue(["node5",5])
-q.sortAsc()
-print(q.items)
-
-
-
+    a = []
+    funcc(a)
+func()
 
 
 

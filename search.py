@@ -39,6 +39,10 @@ class Problem(object):
     def huristic(self, state):
 
         raise NotImplementedError
+
+    def getGoalstate(self):
+
+        raise NotImplementedError
 # ______________________________________________________________________________
 
 class NQueen(Problem):
@@ -167,6 +171,8 @@ class Maze(Problem):
     def huristic(self, state):
 
         raise NotImplementedError
+    def getGoalstate(self):
+        return self.goal
 
 class Node:
 
@@ -422,6 +428,27 @@ def dfs_recurisve(problem):
                 return inner_def_rec(child , e)
     return inner_dfs_rec(root , e)
 
+def dfs (problem):
+
+    root = Node(problem.initial)
+    e = []
+    depthFirstSearch(problem , root , e)
+
+
+def depthFirstSearch(problem = Problem, node = Node, visited=[]):
+
+    if problem.goal_test(node.state):
+        print("reached the goal :", currentNode.state)
+        print("# of expanded nodes : ", expanded_counter)
+        currentNode.solve()
+        return currentNode.solution()
+    visited.append(node)
+    neighbours = problem.result(node.state, problem.actions(node.state))
+    for neighbour in neighbours not in visited:
+        depthFirstSearch(problem , neighbour , visited)
+
+
+
 def bfs_tree(problem):
 
     root = Node(problem.initial)
@@ -490,34 +517,66 @@ def ucs_graph(problem):
     f.enqueue([root , root.path_cost])
     round_counter = 1
     expanded_counter = 1
-    memory_counter = 2
+    memory_counter = 1
     e = [root.state]
     while f :
         f.sortDesc()
-        # print(memory_counter, " nodes are in memory(f) right know")
+        print(memory_counter, " nodes are in memory(f) right know")
         tmp = f.dequeue()
         currentNode = tmp[0]
         e.append(currentNode.state)
-        print(currentNode.state)
-        # memory_counter -= 1
+        memory_counter -= 1
         if problem.goal_test(currentNode.state):
             print("reached the goal :" , currentNode.state)
-            # print("# of expanded nodes : " , expanded_counter)
+            print("# of expanded nodes : " , expanded_counter)
+            currentNode.solve()
             return currentNode.solution()
         else:
             childs = currentNode.expand(problem)
-            # print(currentNode.state , "   expanded")
+            print(currentNode.state , "   expanded")
             expanded_counter += 1
             for child in childs:
                 if child.state not in e:
                     f.enqueue([child , child.path_cost])
-
-                # memory_counter += 1
-                # print(child.state , "   added")
-                # print( child.path_cost)
-        # round_counter += 1
-        # print( "# of visited nodes : ", round_counter , "\n")
+                    memory_counter += 1
+                    print(child.state , "   added with path cost:" , child.path_cost)
+        round_counter += 1
+        print( "# of visited nodes : ", round_counter , "\n")
     return "end of bfs and nothing"
+
+def astar_graph(problem):
+    root = Node(problem.initial)
+    f = MyPriorityQueue()
+    f.enqueue([root , problem.huristic(root.state)])
+    round_counter = 1
+    expanded_counter = 1
+    memory_counter = 1
+    e = [root.state]
+    while f :
+        f.sortDesc()
+        print(memory_counter, " nodes are in memory(f) right know")
+        tmp = f.dequeue()
+        currentNode = tmp[0]
+        e.append(currentNode.state)
+        memory_counter -= 1
+        if problem.goal_test(currentNode.state):
+            print("reached the goal :" , currentNode.state)
+            print("# of expanded nodes : " , expanded_counter)
+            currentNode.solve()
+            return currentNode.solution()
+        else:
+            childs = currentNode.expand(problem)
+            print(currentNode.state , "   expanded")
+            expanded_counter += 1
+            for child in childs:
+                if child.state not in e:
+                    f.enqueue([child , problem.huristic(child.state)])
+                    memory_counter += 1
+                    print(child.state , "   added with huristic:" , problem.huristic(child.state))
+        round_counter += 1
+        print( "# of visited nodes : ", round_counter , "\n")
+    return "end of bfs and nothing"
+
 
 def dfs_tree(problem):
 
@@ -534,6 +593,7 @@ def dfs_tree(problem):
         if problem.goal_test(currentNode.state):
             print("reached the goal :" , currentNode.state)
             print("# of expanded nodes : " , expanded_counter)
+            currentNode.solve()
             return currentNode.solution()
         else:
             childs = currentNode.expand(problem)
@@ -565,7 +625,7 @@ def dfs_graph(problem):
         if problem.goal_test(currentNode.state):
             print("reached the goal :" , currentNode.state)
             print("# of expanded nodes : " , expanded_counter)
-            # currentNode.solve()
+            currentNode.solve()
             return currentNode.solution()
         else:
             childs = currentNode.expand(problem)
@@ -593,8 +653,9 @@ def dfs_graph(problem):
 # print(node1.expand(maze))
 
 #-------------------------------------------- search algorithm tests
-# maze = Maze(3,3,[[1,2],[1,3],[3,1]])
+maze = Maze(6,6,[[1,2],[1,3],[3,1]])
 nqueen = NQueen(4)
+dfs(nqueen)
 # maze = Maze(3,3)
 # bfs_graph(nqueen)
 # bfs_tree(nqueen)
@@ -602,7 +663,8 @@ nqueen = NQueen(4)
 # print(dfs_graph(maze))
 # print(dfs_tree(maze))
 # dfs_recurisve(maze)
-ucs_graph(nqueen)
+# ucs_graph(maze)
+# astar_graph(nqueen)
 # astar_search(maze)
 # hill_climbing(nqueen)
 # hill_climbing_stochastic(nqueen)
