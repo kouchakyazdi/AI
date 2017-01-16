@@ -45,6 +45,42 @@ class Problem(object):
         raise NotImplementedError
 # ______________________________________________________________________________
 
+class SimpleVaccumeMachine (Problem):
+
+    def __init__(self , agentPosition = 'L', leftRoomStatus = 'D', rightRoomStatus = 'D'):
+        self.initial = [agentPosition , leftRoomStatus , rightRoomStatus]
+
+    def actions(self, state):
+        if state[0] =='L' :
+            actions = ['R' , 'C']
+        if state[0] == 'R' :
+            actions = ['L' , 'C']
+        return actions
+
+    def result(self, state, action):
+        nextState = state.copy()
+        if action == 'C':
+            if state[0] == 'L':
+                nextState[1] = 'C'
+            if state[0] == 'R':
+                nextState[2] = 'C'
+            return nextState
+        if action == 'L':
+            nextState[0] = 'L'
+            return nextState
+        if action == 'R':
+            nextState[0] = 'R'
+            return nextState
+
+    def goal_test(self, state):
+        if state[1] == 'C' and state[2] == 'C':
+            return True
+        return False
+
+    def path_cost(self, c, state1, action, state2):
+        return c+1
+
+
 class NQueen(Problem):
 
     def __init__(self , n ):
@@ -411,41 +447,29 @@ def hill_climbing_random_restart(problem , run_counter = 8):
             currentNode = neighbour
             print(currentNode.state)
 
-# TODO fix it. dosent work :(
-def dfs_recurisve(problem):
-    root = Node(problem.initial,action=problem.actions(problem.initial))
-    # f = []
-    e = []
-    def inner_dfs_rec(node , e):
-        current_node = node
-        if problem.goal_test(current_node.state):
-            # f.append(node.action)
-            return current_node
-        else:
-            childs = current_node.expand(problem)
-            for child in childs not in e:
-                e.append(child)
-                return inner_def_rec(child , e)
-    return inner_dfs_rec(root , e)
+# TODO modify it (analytical report)
 
-def dfs (problem):
+def dfs_rec (problem):
 
     root = Node(problem.initial)
     e = []
+    sys.setrecursionlimit(50000)
     depthFirstSearch(problem , root , e)
+    return
 
 
 def depthFirstSearch(problem = Problem, node = Node, visited=[]):
 
     if problem.goal_test(node.state):
-        print("reached the goal :", currentNode.state)
-        print("# of expanded nodes : ", expanded_counter)
-        currentNode.solve()
-        return currentNode.solution()
-    visited.append(node)
-    neighbours = problem.result(node.state, problem.actions(node.state))
-    for neighbour in neighbours not in visited:
-        depthFirstSearch(problem , neighbour , visited)
+        print("reached the goal :", node.state)
+        # print("# of expanded nodes : ", expanded_counter)
+        node.solve()
+        return
+    visited.append(node.state)
+    neighbours = node.expand(problem)
+    for neighbour in neighbours:
+        if neighbour.state not in visited:
+            depthFirstSearch(problem , neighbour , visited)
 
 
 
@@ -454,7 +478,7 @@ def bfs_tree(problem):
     root = Node(problem.initial)
     f = MyQueue()
     f.enqueue(root)
-    round_counter = 1
+    visitedNodesCounter = 1
     expanded_counter = 1
     memory_counter = 2
     while f :
@@ -472,9 +496,9 @@ def bfs_tree(problem):
             for child in childs:
                 f.enqueue(child)
                 memory_counter += 1
+                visitedNodesCounter += 1
                 print(child.state , "   added")
-        round_counter += 1
-        print( "# of visited nodes : ", round_counter , "\n")
+        print( "# of visited nodes : ", visitedNodesCounter , "\n")
     return "end of bfs and nothing"
 
 
@@ -484,7 +508,7 @@ def bfs_graph(problem):
     e = []
     f = MyQueue()
     f.enqueue(root)
-    round_counter = 1
+    visitedNodesCounter = 1
     expanded_counter = 1
     memory_counter = 2
     while f :
@@ -506,16 +530,16 @@ def bfs_graph(problem):
                 if child not in f.items and child.state not in e:    #cheto mishe akhe currentNode age be e ezaf konim kar nemikone !!
                     f.enqueue(child)
                     memory_counter += 1
+                    visitedNodesCounter += 1
                     print(child.state , "   added")
-        round_counter += 1
-        print( "# of visited nodes : ", round_counter , "\n")
+        print( "# of visited nodes : ", visitedNodesCounter , "\n")
     return "end of bfs and nothing"
 
 def ucs_graph(problem):
     root = Node(problem.initial)
     f = MyPriorityQueue()
     f.enqueue([root , root.path_cost])
-    round_counter = 1
+    visitedNodesCounter = 1
     expanded_counter = 1
     memory_counter = 1
     e = [root.state]
@@ -539,16 +563,16 @@ def ucs_graph(problem):
                 if child.state not in e:
                     f.enqueue([child , child.path_cost])
                     memory_counter += 1
+                    visitedNodesCounter += 1
                     print(child.state , "   added with path cost:" , child.path_cost)
-        round_counter += 1
-        print( "# of visited nodes : ", round_counter , "\n")
+        print( "# of visited nodes : ", visitedNodesCounter , "\n")
     return "end of bfs and nothing"
 
 def astar_graph(problem):
     root = Node(problem.initial)
     f = MyPriorityQueue()
     f.enqueue([root , problem.huristic(root.state)])
-    round_counter = 1
+    visitedNodesCounter = 1
     expanded_counter = 1
     memory_counter = 1
     e = [root.state]
@@ -572,9 +596,9 @@ def astar_graph(problem):
                 if child.state not in e:
                     f.enqueue([child , problem.huristic(child.state)])
                     memory_counter += 1
+                    visitedNodesCounter += 1
                     print(child.state , "   added with huristic:" , problem.huristic(child.state))
-        round_counter += 1
-        print( "# of visited nodes : ", round_counter , "\n")
+        print( "# of visited nodes : ", visitedNodesCounter , "\n")
     return "end of bfs and nothing"
 
 
@@ -583,7 +607,7 @@ def dfs_tree(problem):
     root = Node(problem.initial)
     f = MyStack()
     f.push(root)
-    round_counter = 1
+    visitedNodesCounter = 1
     expanded_counter = 1
     memory_counter = 2
     while f :
@@ -602,9 +626,9 @@ def dfs_tree(problem):
             for child in childs:
                 f.push(child)
                 memory_counter += 1
+                visitedNodesCounter += 1
                 print(child.state , "   added")
-        round_counter += 1
-        print( "# of visited nodes : ", round_counter , "\n")
+        print( "# of visited nodes : ", visitedNodesCounter , "\n")
     return "end of bfs and nothing"
 
 def dfs_graph(problem):
@@ -613,7 +637,7 @@ def dfs_graph(problem):
     e = []
     f = MyStack()
     f.push(root)
-    round_counter = 1
+    visitedNodesCounter = 1
     expanded_counter = 1
     memory_counter = 2
     while f :
@@ -635,9 +659,9 @@ def dfs_graph(problem):
                 if child not in f.items and child.state not in e:    #cheto mishe akhe currentNode age be e ezaf konim kar nemikone !!
                     f.push(child)
                     memory_counter += 1
+                    visitedNodesCounter += 1
                     print(child.state , "   added")
-        round_counter += 1
-        print( "# of visited nodes : ", round_counter , "\n")
+        print( "# of visited nodes : ", visitedNodesCounter , "\n")
     return "end of bfs and nothing"
 
 
@@ -654,18 +678,18 @@ def dfs_graph(problem):
 
 #-------------------------------------------- search algorithm tests
 maze = Maze(6,6,[[1,2],[1,3],[3,1]])
-nqueen = NQueen(4)
-dfs(nqueen)
 # maze = Maze(3,3)
+nqueen = NQueen(4)
+smv = SimpleVaccumeMachine()
+bfs_graph(smv)
+# dfs_rec(nqueen)
 # bfs_graph(nqueen)
 # bfs_tree(nqueen)
-# breadth_first_search(nqueen)
+# ucs_graph(maze)
+# astar_graph(nqueen)
 # print(dfs_graph(maze))
 # print(dfs_tree(maze))
 # dfs_recurisve(maze)
-# ucs_graph(maze)
-# astar_graph(nqueen)
-# astar_search(maze)
 # hill_climbing(nqueen)
 # hill_climbing_stochastic(nqueen)
 # hill_climbing_random_restart(nqueen,10)
